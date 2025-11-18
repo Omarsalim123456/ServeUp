@@ -833,41 +833,41 @@
         font-size: 2rem;
       }
     }
-/* WHATSAPP FLOAT BUTTON */
-.whatsapp-btn {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 50;
-  background: #25d366;
-  color: #fff;
-  border-radius: 999px;
-  padding: 0.55rem 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 600;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-}
+    /* WHATSAPP FLOAT BUTTON */
+    .whatsapp-btn {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      background: #25d366;
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.55rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
 
-body.ar-active .whatsapp-btn {
-  right: auto;
-  left: 18px; /* في العربي خله يسار */
-}
+    body.ar-active .whatsapp-btn {
+      right: auto;
+      left: 18px; /* في العربي خله يسار */
+    }
 
-.whatsapp-icon {
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  color: #25d366;
-}
+    .whatsapp-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: #25d366;
+    }
 
   </style>
 </head>
@@ -908,10 +908,11 @@ body.ar-active .whatsapp-btn {
             <button class="lang-btn lang-active" data-lang="en">EN</button>
             <button class="lang-btn" data-lang="ar">ع</button>
           </div>
-          <button class="btn btn-ghost">
+          <!-- تم تحويل زر Sign in إلى رابط يفتح login.html -->
+          <a href="login.html" class="btn btn-ghost">
             <span class="lang-en">Sign in</span>
             <span class="lang-ar">تسجيل الدخول</span>
-          </button>
+          </a>
           <button class="btn btn-primary">
             <span class="lang-en">Get the app</span>
             <span class="lang-ar">تحميل التطبيق</span>
@@ -1295,7 +1296,7 @@ body.ar-active .whatsapp-btn {
       <section id="download" class="cta">
         <div class="container cta-inner">
           <div class="cta-card">
-                        <h2 class="cta-title">
+            <h2 class="cta-title">
               <span class="lang-en">Ready when you are. Download ServeUp.</span>
               <span class="lang-ar">جاهزون متى ما احتجت. حمّل تطبيق سيرف أب.</span>
             </h2>
