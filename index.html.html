@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ServeUp – Services at Your Doorstep</title>
+  <style>
+    :root {
+      --primary-dark: #1a1a1a;
+      --primary-blue: #1363df;
+      --primary-green: #20c997;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --bg-light: #f9fafb;
+      --bg-dark: #020617;
+      --card-dark: #0b1120;
+      --border-soft: #e5e7eb;
+      --radius-xl: 18px;
+      --radius-2xl: 26px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.15);
+      --shadow-subtle: 0 10px 30px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Tahoma", "Cairo", sans-serif;
+      background: var(--bg-light);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    body.ar-active {
+      direction: rtl;
+      text-align: right;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* LANG TOGGLE */
+    .lang-toggle {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      overflow: hidden;
+    }
+    .lang-btn {
+      border: none;
+      background: transparent;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .lang-btn.lang-active {
+      background: linear-gradient(120deg, var(--primary-blue), var(--primary-green));
+      color: #f9fafb;
+    }
+
+    .lang-en { display: inline; }
+    .lang-ar { display: none; }
+
+    body.ar-active .lang-en { display: none; }
+    body.ar-active .lang-ar { display: inline; }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(249, 250, 251, 0.92);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 0;
+      gap: 1.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 0%, #38bdf8, #1363df 45%, #0f172a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .brand-sub {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      position: relative;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.35rem;
+      width: 0;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+      transition: width 0.2s ease-out;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.55rem 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+        background 0.12s ease-out, color 0.12s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+    }
+
+    .btn-ghost:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(148, 163, 184, 0.35);
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, var(--primary-blue), var(--primary-green));
+      color: #f9fafb;
+      box-shadow: 0 14px 35px rgba(56, 189, 248, 0.38);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      background: radial-gradient(
+          circle at top left,
+          #e0f2fe 0,
+          #f9fafb 38%,
+          #e5f9f3 72%,
+          #020617 100%
+        );
+      padding: 3.5rem 0 4.25rem;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.1fr);
+      gap: 3rem;
+      align-items: center;
+    }
+
+    body.ar-active .hero-inner {
+      direction: rtl;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.18rem 0.5rem 0.18rem 0.24rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.72rem;
+      margin-bottom: 1.05rem;
+    }
+
+    .hero-kicker-pill {
+      padding: 0.16rem 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(130deg, #22c55e, #0ea5e9);
+      color: #f9fafb;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.65rem;
+    }
+
+    .hero-kicker-text {
+      color: var(--text-muted);
+    }
+
+    .hero-title {
+      font-size: clamp(2.3rem, 3vw, 2.8rem);
+      line-height: 1.1;
+      margin-bottom: 0.9rem;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span.gradient {
+      background: linear-gradient(120deg, var(--primary-blue), var(--primary-green));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      max-width: 32rem;
+      margin-bottom: 1.3rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.3rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .hero-meta strong {
+      color: var(--text-main);
+      font-size: 0.86rem;
+    }
+
+    .hero-right {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .hero-card {
+      width: 100%;
+      max-width: 420px;
+      border-radius: var(--radius-2xl);
+      background: radial-gradient(
+          circle at 0 0,
+          rgba(56, 189, 248, 0.12),
+          transparent 60%
+        ),
+        radial-gradient(circle at 100% 0, rgba(45, 212, 191, 0.14), transparent 60%),
+        var(--card-dark);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+      padding: 1.1rem 1.1rem 1.25rem;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .hero-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+    }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.16rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #bbf7d0;
+      font-size: 0.72rem;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.25);
+    }
+
+    .hero-card-title {
+      font-size: 0.85rem;
+      color: #e5e7eb;
+    }
+
+    .hero-card-main {
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.2), transparent 65%),
+        #020617;
+      padding: 0.9rem;
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .hero-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .hero-card-row strong {
+      color: #e5e7eb;
+      font-size: 0.86rem;
+    }
+
+    .hero-card-progress {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      overflow: hidden;
+      border: 1px solid rgba(30, 64, 175, 0.8);
+    }
+
+    .hero-card-progress-fill {
+      width: 68%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+    }
+
+    .hero-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+
+    .avatar-stack {
+      display: flex;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 2px solid #020617;
+      background: linear-gradient(135deg, #22c55e, #0ea5e9);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-size: 0.7rem;
+      margin-left: -7px;
+    }
+
+    .avatar:first-child {
+      margin-left: 0;
+    }
+
+    /* DARK SECTION: SERVICES */
+    .section-dark {
+      background: radial-gradient(circle at top, #030712, #020617 58%);
+      color: #e5e7eb;
+      padding: 3.2rem 0 3.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-kicker {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      max-width: 32rem;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .service-card {
+      background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.45), transparent 56%),
+        rgba(15, 23, 42, 0.9);
+      border-radius: var(--radius-xl);
+      padding: 0.9rem 0.9rem 0.95rem;
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      font-size: 0.84rem;
+    }
+
+    .service-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(129, 140, 248, 0.9);
+      font-size: 0.8rem;
+    }
+
+    .service-title {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .service-text {
+      color: #9ca3af;
+      font-size: 0.78rem;
+    }
+
+    .service-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      font-size: 0.76rem;
+      color: #9ca3af;
+    }
+
+    .badge-soft {
+      padding: 0.12rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      font-size: 0.7rem;
+    }
+
+    /* HOW IT WORKS */
+    .section-light {
+      background: var(--bg-light);
+      padding: 3.2rem 0;
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.2rem;
+    }
+
+    .how-card {
+      border-radius: var(--radius-xl);
+      background: #ffffff;
+      border: 1px solid var(--border-soft);
+      padding: 1rem 1rem 1.05rem;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+      font-size: 0.88rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .how-step {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 0 0, #22c55e, #0ea5e9);
+      color: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .how-title {
+      font-weight: 600;
+    }
+
+    .how-text {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* CTA DOWNLOAD */
+    .cta {
+      padding: 3.2rem 0 3.4rem;
+      background: radial-gradient(circle at top, #020617, #020617 46%, #0b1120 100%);
+      color: #e5e7eb;
+    }
+
+    .cta-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 2.4rem;
+      align-items: center;
+    }
+
+    .cta-card {
+      border-radius: var(--radius-2xl);
+      background: radial-gradient(
+          circle at 0 0,
+          rgba(56, 189, 248, 0.2),
+          transparent 60%
+        ),
+        radial-gradient(
+          circle at 100% 0,
+          rgba(34, 197, 94, 0.25),
+          transparent 60%
+        ),
+        #020617;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 1.6rem 1.4rem;
+      box-shadow: 0 18px 55px rgba(15, 23, 42, 0.85);
+    }
+
+    .cta-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+
+    .cta-text {
+      font-size: 0.9rem;
+      color: #cbd5f5;
+      max-width: 28rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .store-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1.3rem;
+    }
+
+    .store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.75);
+      font-size: 0.78rem;
+    }
+
+    .store-badge span {
+      display: block;
+      line-height: 1.3;
+    }
+
+    .store-badge strong {
+      display: block;
+      font-size: 0.84rem;
+    }
+
+    .cta-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+
+    .cta-metrics strong {
+      display: block;
+      color: #e5e7eb;
+      font-size: 1rem;
+    }
+
+    .cta-phone {
+      border-radius: 32px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: radial-gradient(
+          circle at top,
+          rgba(56, 189, 248, 0.25),
+          transparent 60%
+        ),
+        #020617;
+      padding: 1rem 0.8rem;
+      max-width: 240px;
+      margin-left: auto;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 1);
+    }
+
+    .phone-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.7rem;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .phone-pill {
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .phone-card {
+      border-radius: 20px;
+      background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.3),
+          transparent 60%
+        ),
+        rgba(15, 23, 42, 0.98);
+      padding: 0.8rem;
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      font-size: 0.78rem;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .phone-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .phone-tag {
+      padding: 0.05rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.65);
+      font-size: 0.7rem;
+      color: #bbf7d0;
+    }
+
+    .phone-map {
+      margin-top: 0.4rem;
+      height: 70px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0 0, #22c55e, transparent 60%),
+        radial-gradient(circle at 100% 0, #0ea5e9, transparent 55%), #020617;
+      border: 1px solid rgba(30, 64, 175, 0.85);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-dot {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.4);
+      left: 18%;
+      top: 26%;
+    }
+
+    .phone-dot.client {
+      background: #38bdf8;
+      box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.4);
+      left: 68%;
+      top: 62%;
+    }
+
+    .phone-path {
+      position: absolute;
+      inset: 18% 16% 18% 16%;
+      border-radius: 999px;
+      border: 1px dashed rgba(148, 163, 184, 0.5);
+    }
+
+    /* FOOTER */
+    footer {
+      background: #020617;
+      color: #9ca3af;
+      padding: 1.8rem 0 1.9rem;
+      border-top: 1px solid rgba(30, 64, 175, 0.7);
+      font-size: 0.78rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .footer-links a {
+      color: #9ca3af;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      color: #e5e7eb;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      .hero-inner,
+      .cta-inner {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-right {
+        order: -1;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .services-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .how-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cta-phone {
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 2.4rem 0 2.8rem;
+      }
+
+      .hero-card {
+        max-width: 100%;
+      }
+
+      .services-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .how-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+    }
+/* WHATSAPP FLOAT BUTTON */
+.whatsapp-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 50;
+  background: #25d366;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+body.ar-active .whatsapp-btn {
+  right: auto;
+  left: 18px; /* في العربي خله يسار */
+}
+
+.whatsapp-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #25d366;
+}
+
+  </style>
+</head>
+<body class="ar-active">
+  <div class="page">
+    <header>
+      <div class="container header-inner">
+        <div class="brand">
+          <div class="brand-icon">SU↗</div>
+          <div class="brand-text">
+            <div class="brand-title">SERVE UP</div>
+            <div class="brand-sub">
+              <span class="lang-en">SERVICES AT YOUR DOORSTEP</span>
+              <span class="lang-ar">خدمات تصل إلى باب منزلك</span>
+            </div>
+          </div>
+        </div>
+        <nav>
+          <a href="#how">
+            <span class="lang-en">How it works</span>
+            <span class="lang-ar">كيف يعمل</span>
+          </a>
+          <a href="#services">
+            <span class="lang-en">Services</span>
+            <span class="lang-ar">الخدمات</span>
+          </a>
+          <a href="#download">
+            <span class="lang-en">Download</span>
+            <span class="lang-ar">تحميل التطبيق</span>
+          </a>
+          <a href="#contact">
+            <span class="lang-en">Contact</span>
+            <span class="lang-ar">تواصل معنا</span>
+          </a>
+        </nav>
+        <div class="header-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn lang-active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="ar">ع</button>
+          </div>
+          <button class="btn btn-ghost">
+            <span class="lang-en">Sign in</span>
+            <span class="lang-ar">تسجيل الدخول</span>
+          </button>
+          <button class="btn btn-primary">
+            <span class="lang-en">Get the app</span>
+            <span class="lang-ar">تحميل التطبيق</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-left">
+            <div class="hero-kicker">
+              <span class="hero-kicker-pill">NEW • OMAN</span>
+              <span class="hero-kicker-text lang-en">On-demand home & field services</span>
+              <span class="hero-kicker-text lang-ar">خدمات ميدانية ومنزلية عند الطلب</span>
+            </div>
+            <h1 class="hero-title">
+              <span class="lang-en">
+                Get trusted workers
+                <span class="gradient">to your doorstep</span>
+                in minutes.
+              </span>
+              <span class="lang-ar">
+                احصل على عمال موثوقين
+                <span class="gradient">يصلون إلى باب منزلك</span>
+                في دقائق.
+              </span>
+            </h1>
+            <p class="hero-subtitle">
+              <span class="lang-en">
+                ServeUp connects you with verified cleaners, electricians, plumbers,
+                AC technicians, gardeners, hourly housemaids, butchers and more across
+                Oman — all in one app.
+              </span>
+              <span class="lang-ar">
+                سيرف أب يربطك مع عمال موثوقين في التنظيف، الكهرباء، السباكة،
+                التكييف، الزراعة، عاملات المنازل بالساعة، الجزّارين وغيرهم
+                في جميع أنحاء عُمان — عبر تطبيق واحد فقط.
+              </span>
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">
+                <span class="lang-en">Download ServeUp</span>
+                <span class="lang-ar">حمّل تطبيق سيرف أب</span>
+              </button>
+              <button class="btn btn-ghost">
+                <span class="lang-en">Browse services</span>
+                <span class="lang-ar">تصفّح الخدمات</span>
+              </button>
+            </div>
+            <div class="hero-meta">
+              <span>
+                <strong class="lang-en">50+ service types</strong>
+                <strong class="lang-ar">أكثر من 50 نوع خدمة</strong><br/>
+                <span class="lang-en">Home, office & field work</span>
+                <span class="lang-ar">منازل، مكاتب وأعمال ميدانية</span>
+              </span>
+              <span>
+                <strong class="lang-en">&lt; 10 min avg. response</strong>
+                <strong class="lang-ar">متوسط استجابة أقل من 10 دقائق</strong><br/>
+                <span class="lang-en">In supported areas</span>
+                <span class="lang-ar">في المناطق المدعومة</span>
+              </span>
+              <span>
+                <strong class="lang-en">Verified providers</strong>
+                <strong class="lang-ar">مزودو خدمات موثوقون</strong><br/>
+                <span class="lang-en">ID & skill checked</span>
+                <span class="lang-ar">تم التحقق من الهوية والخبرة</span>
+              </span>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="hero-card" aria-hidden="true">
+              <div class="hero-card-header">
+                <div>
+                  <div class="hero-card-title lang-en">Live request overview</div>
+                  <div class="hero-card-title lang-ar">نظرة عامة على الطلبات المباشرة</div>
+                  <small style="color:#9ca3af;font-size:0.72rem;" class="lang-en">
+                    Customers getting service right now
+                  </small>
+                  <small style="color:#9ca3af;font-size:0.72rem;" class="lang-ar">
+                    عملاء يحصلون على الخدمة الآن
+                  </small>
+                </div>
+                <div class="badge-live">
+                  <span class="badge-dot"></span>
+                  <span class="lang-en">Live</span>
+                  <span class="lang-ar">مباشر</span>
+                </div>
+              </div>
+              <div class="hero-card-main">
+                <div class="hero-card-row">
+                  <span class="lang-en">Muscat • Cleaning</span>
+                  <span class="lang-ar">مسقط • تنظيف</span>
+                  <strong class="lang-en">Worker arriving in 7 min</strong>
+                  <strong class="lang-ar">العامل سيصل خلال ٧ دقائق</strong>
+                </div>
+                <div class="hero-card-progress">
+                  <div class="hero-card-progress-fill"></div>
+                </div>
+                <div class="hero-card-row">
+                  <span class="lang-en">Today</span>
+                  <span class="lang-ar">اليوم</span>
+                  <span class="lang-en">18 jobs in progress</span>
+                  <span class="lang-ar">١٨ خدمة قيد التنفيذ</span>
+                </div>
+              </div>
+              <div class="hero-card-footer">
+                <div>
+                  <div style="margin-bottom:0.1rem;" class="lang-en">
+                    Currently online providers
+                  </div>
+                  <div style="margin-bottom:0.1rem;" class="lang-ar">
+                    مقدمو خدمات متصلون الآن
+                  </div>
+                  <div class="avatar-stack">
+                    <div class="avatar">MA</div>
+                    <div class="avatar">RA</div>
+                    <div class="avatar">FA</div>
+                    <div class="avatar">+12</div>
+                  </div>
+                </div>
+                <div>
+                  <div style="margin-bottom:0.1rem;" class="lang-en">Customer rating</div>
+                  <div style="margin-bottom:0.1rem;" class="lang-ar">تقييم العملاء</div>
+                  <strong>4.9/5.0</strong>
+                  <div style="font-size:0.7rem;color:#9ca3af;" class="lang-en">
+                    Based on early pilot users
+                  </div>
+                  <div style="font-size:0.7rem;color:#9ca3af;" class="lang-ar">
+                    بناءً على تقييم مستخدمي النسخة التجريبية
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES (DARK) -->
+      <section id="services" class="section-dark">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-kicker lang-en">SERVICE CATEGORIES</div>
+            <div class="section-kicker lang-ar">فئات الخدمات</div>
+            <div class="section-title lang-en">Everything you need, in one place.</div>
+            <div class="section-title lang-ar">كل ما تحتاجه في مكان واحد.</div>
+            <div class="section-subtitle">
+              <span class="lang-en">
+                Book trusted workers for home, office and field tasks across Oman.
+                Choose a category, pick your worker, and confirm in seconds.
+              </span>
+              <span class="lang-ar">
+                احجز عمالاً موثوقين للأعمال المنزلية والمكتبية والميدانية في مختلف
+                مناطق عُمان. اختر الفئة، ثم العامل، وأكّد الطلب خلال ثوانٍ.
+              </span>
+            </div>
+          </div>
+          <div class="services-grid">
+            <article class="service-card">
+              <div class="service-chip">⚡</div>
+              <div class="service-title lang-en">Electrical</div>
+              <div class="service-title lang-ar">أعمال الكهرباء</div>
+              <div class="service-text lang-en">
+                Fix sockets, lighting, short circuits, breakers and more.
+              </div>
+              <div class="service-text lang-ar">
+                إصلاح الأفياش، الإضاءة، القواطع والأعطال الكهربائية المختلفة.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">From 3 OMR / hr</span>
+                <span class="lang-ar">ابتداءً من ٣ ريال/ساعة</span>
+                <span class="badge-soft lang-en">High demand</span>
+                <span class="badge-soft lang-ar">طلب عالٍ</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">🚿</div>
+              <div class="service-title lang-en">Plumbing</div>
+              <div class="service-title lang-ar">السباكة</div>
+              <div class="service-text lang-en">
+                Leaks, blockages, bathroom & kitchen installations.
+              </div>
+              <div class="service-text lang-ar">
+                معالجة التسريبات، الانسدادات، وتركيب أدوات الحمام والمطبخ.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">From 3.5 OMR / hr</span>
+                <span class="lang-ar">ابتداءً من ٣.٥ ريال/ساعة</span>
+                <span class="lang-en">Trusted pros</span>
+                <span class="lang-ar">فنيون موثوقون</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">🧹</div>
+              <div class="service-title lang-en">Home cleaning</div>
+              <div class="service-title lang-ar">تنظيف المنازل</div>
+              <div class="service-text lang-en">
+                Apartments, villas, offices and move-in deep cleaning.
+              </div>
+              <div class="service-text lang-ar">
+                تنظيف الشقق، الفلل، المكاتب والتنظيف العميق قبل السكن.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">From 2.8 OMR / hr</span>
+                <span class="lang-ar">ابتداءً من ٢.٨ ريال/ساعة</span>
+                <span class="lang-en">Female / male</span>
+                <span class="lang-ar">عاملات وعمّال</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">❄️</div>
+              <div class="service-title lang-en">AC & cooling</div>
+              <div class="service-title lang-ar">التكييف والتبريد</div>
+              <div class="service-text lang-en">
+                AC repair, gas refill, filter change and full servicing.
+              </div>
+              <div class="service-text lang-ar">
+                صيانة المكيفات، تعبئة الفريون، تبديل الفلاتر والخدمة الشاملة.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">From 6 OMR / visit</span>
+                <span class="lang-ar">ابتداءً من ٦ ريالات/زيارة</span>
+                <span class="lang-en">Seasonal</span>
+                <span class="lang-ar">موسمي</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">🌱</div>
+              <div class="service-title lang-en">Gardening</div>
+              <div class="service-title lang-ar">تنسيق الحدائق</div>
+              <div class="service-text lang-en">
+                Lawn care, trees, plants and garden maintenance.
+              </div>
+              <div class="service-text lang-ar">
+                العناية بالعشب، والأشجار، والنباتات، وصيانة الحدائق.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">From 3 OMR / hr</span>
+                <span class="lang-ar">ابتداءً من ٣ ريال/ساعة</span>
+                <span class="lang-en">Outdoor</span>
+                <span class="lang-ar">أعمال خارجية</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">🥩</div>
+              <div class="service-title lang-en">Meat cutting</div>
+              <div class="service-title lang-ar">تقطيع اللحوم</div>
+              <div class="service-text lang-en">
+                Skilled butchers for events, Eid and family gatherings.
+              </div>
+              <div class="service-text lang-ar">
+                جزّارون مهرة للمناسبات والأعياد والتجمعات العائلية.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">Per job pricing</span>
+                <span class="lang-ar">تسعير حسب الخدمة</span>
+                <span class="lang-en">On-site</span>
+                <span class="lang-ar">في موقع العميل</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">🚚</div>
+              <div class="service-title lang-en">Moving & lifting</div>
+              <div class="service-title lang-ar">نقل ورفع الأثاث</div>
+              <div class="service-text lang-en">
+                Help with furniture moving, loading and unloading.
+              </div>
+              <div class="service-text lang-ar">
+                مساعدة في نقل الأثاث، التحميل والتنزيل.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">From 3 OMR / hr</span>
+                <span class="lang-ar">ابتداءً من ٣ ريال/ساعة</span>
+                <span class="lang-en">Teams</span>
+                <span class="lang-ar">فرق عمل</span>
+              </div>
+            </article>
+            <article class="service-card">
+              <div class="service-chip">🧰</div>
+              <div class="service-title lang-en">General labor</div>
+              <div class="service-title lang-ar">أعمال عامة</div>
+              <div class="service-text lang-en">
+                Flexible manpower for different daily tasks and projects.
+              </div>
+              <div class="service-text lang-ar">
+                عمالة مرنة لمختلف المهام اليومية والمشاريع.
+              </div>
+              <div class="service-meta">
+                <span class="lang-en">Flexible rates</span>
+                <span class="lang-ar">أسعار مرنة</span>
+                <span class="lang-en">Day / hour</span>
+                <span class="lang-ar">بالساعة أو باليوم</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section id="how" class="section-light">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-kicker lang-en">HOW IT WORKS</div>
+            <div class="section-kicker lang-ar">كيف يعمل</div>
+            <div class="section-title lang-en">
+              From tap to task, in four simple steps.
+            </div>
+            <div class="section-title lang-ar">
+              من ضغطة زر إلى إنجاز الخدمة في أربع خطوات بسيطة.
+            </div>
+            <div class="section-subtitle">
+              <span class="lang-en">
+                ServeUp is built to feel simple for customers and powerful for providers.
+                Here’s how the flow works for every booking.
+              </span>
+              <span class="lang-ar">
+                صُمم سيرف أب ليكون سهلًا على العميل وفعّالًا لمقدّم الخدمة.
+                إليك كيف تتم العملية في كل طلب.
+              </span>
+            </div>
+          </div>
+          <div class="how-grid">
+            <article class="how-card">
+              <div class="how-step">1</div>
+              <div class="how-title lang-en">Choose your service</div>
+              <div class="how-title lang-ar">اختر نوع الخدمة</div>
+              <div class="how-text lang-en">
+                Open ServeUp, select a category like cleaning, electrical or gardening and
+                tell us what you need.
+              </div>
+              <div class="how-text lang-ar">
+                افتح سيرف أب، واختر فئة الخدمة مثل التنظيف أو الكهرباء أو الحدائق،
+                وحدد ما تحتاجه بالضبط.
+              </div>
+            </article>
+            <article class="how-card">
+              <div class="how-step">2</div>
+              <div class="how-title lang-en">Set time & location</div>
+              <div class="how-title lang-ar">حدّد الوقت والموقع</div>
+              <div class="how-text lang-en">
+                Share your location through GPS and choose whether you want the service now or later.
+              </div>
+              <div class="how-text lang-ar">
+                شارك موقعك عبر الـ GPS، واختر هل تريد الخدمة الآن أو في وقت لاحق.
+              </div>
+            </article>
+            <article class="how-card">
+              <div class="how-step">3</div>
+              <div class="how-title lang-en">Pick your worker</div>
+              <div class="how-title lang-ar">اختر العامل المناسب</div>
+              <div class="how-text lang-en">
+                Browse nearby providers, compare pricing, ratings and experience,
+                then confirm your choice.
+              </div>
+              <div class="how-text lang-ar">
+                تصفّح العمال القريبين، قارن الأسعار والتقييمات والخبرات،
+                ثم أكّد اختيارك.
+              </div>
+            </article>
+            <article class="how-card">
+              <div class="how-step">4</div>
+              <div class="how-title lang-en">Track & complete</div>
+              <div class="how-title lang-ar">تتبّع وانهِ الطلب</div>
+              <div class="how-text lang-en">
+                Track your worker live, get the job done, then pay securely with cash, card
+                or wallet and leave a rating.
+              </div>
+              <div class="how-text lang-ar">
+                تتبّع العامل مباشرة عبر الخريطة، وبعد إنجاز الخدمة ادفع بأمان نقدًا
+                أو عبر البطاقة أو المحفظة، ثم قيّم التجربة.
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA DOWNLOAD -->
+      <section id="download" class="cta">
+        <div class="container cta-inner">
+          <div class="cta-card">
+                        <h2 class="cta-title">
+              <span class="lang-en">Ready when you are. Download ServeUp.</span>
+              <span class="lang-ar">جاهزون متى ما احتجت. حمّل تطبيق سيرف أب.</span>
+            </h2>
+            <p class="cta-text">
+              <span class="lang-en">
+                Join early customers and providers using ServeUp to simplify daily life
+                and work. One app to book, manage and track all your service needs across Oman.
+              </span>
+              <span class="lang-ar">
+                انضم إلى أوائل العملاء ومقدّمي الخدمات الذين يستخدمون سيرف أب لتسهيل
+                حياتهم اليومية وأعمالهم. تطبيق واحد للحجز، والمتابعة، وتتبع جميع خدماتك
+                في أنحاء عُمان.
+              </span>
+            </p>
+            <div class="store-buttons">
+              <button class="store-badge">
+                <span>
+                  <span style="font-size:0.68rem;color:#9ca3af;" class="lang-en">Download on the</span>
+                  <span style="font-size:0.68rem;color:#9ca3af;" class="lang-ar">حمّل من</span>
+                  <strong>App Store</strong>
+                </span>
+              </button>
+              <button class="store-badge">
+                <span>
+                  <span style="font-size:0.68rem;color:#9ca3af;" class="lang-en">Get it on</span>
+                  <span style="font-size:0.68rem;color:#9ca3af;" class="lang-ar">متوفر على</span>
+                  <strong>Google Play</strong>
+                </span>
+              </button>
+            </div>
+            <div class="cta-metrics">
+              <div>
+                <strong>10 min</strong>
+                <span class="lang-en">Average response time in pilot areas.</span>
+                <span class="lang-ar">متوسط زمن الاستجابة في المناطق التجريبية.</span>
+              </div>
+              <div>
+                <strong>4.9 / 5.0</strong>
+                <span class="lang-en">Early customer satisfaction rating.</span>
+                <span class="lang-ar">متوسط رضا العملاء في المرحلة الأولى.</span>
+              </div>
+              <div>
+                <strong>50+ services</strong>
+                <span class="lang-en">From home cleaning to field labor.</span>
+                <span class="lang-ar">من التنظيف المنزلي إلى العمالة الميدانية.</span>
+              </div>
+            </div>
+          </div>
+          <div class="cta-phone" aria-hidden="true">
+            <div class="phone-top">
+              <span class="lang-en">ServeUp • Live</span>
+              <span class="lang-ar">سيرف أب • مباشر</span>
+              <span class="phone-pill lang-en">Customer view</span>
+              <span class="phone-pill lang-ar">واجهة العميل</span>
+            </div>
+            <div class="phone-card">
+              <div class="phone-row">
+                <span class="lang-en">Cleaner on the way</span>
+                <span class="lang-ar">عامل/عاملة التنظيف في الطريق</span>
+                <span class="lang-en">Arriving in 9 min</span>
+                <span class="lang-ar">سيصل خلال ٩ دقائق</span>
+              </div>
+              <div class="phone-row" style="font-size:0.72rem;color:#9ca3af;">
+                <span class="lang-en">Al Khuwair, Muscat</span>
+                <span class="lang-ar">الخوير، مسقط</span>
+                <span class="phone-tag lang-en">Verified provider</span>
+                <span class="phone-tag lang-ar">مزود خدمة موثوق</span>
+              </div>
+              <div class="phone-map">
+                <div class="phone-path"></div>
+                <div class="phone-dot"></div>
+                <div class="phone-dot client"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="contact">
+      <div class="container footer-inner">
+        <div>
+          <span class="lang-en">© <span id="year">2025</span> ServeUp. All rights reserved.</span>
+          <span class="lang-ar">© <span id="year-ar">2025</span> سيرف أب. جميع الحقوق محفوظة.</span>
+        </div>
+        <div class="footer-links">
+          <a href="#">
+            <span class="lang-en">Privacy policy</span>
+            <span class="lang-ar">سياسة الخصوصية</span>
+          </a>
+          <a href="#">
+            <span class="lang-en">Terms of use</span>
+            <span class="lang-ar">الشروط والأحكام</span>
+          </a>
+          <a href="#">
+            <span class="lang-en">Become a provider</span>
+            <span class="lang-ar">انضم كمقدّم خدمة</span>
+          </a>
+          <a href="#">
+            <span class="lang-en">Support</span>
+            <span class="lang-ar">الدعم الفني</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // تحديث سنة الفوتر
+    (function () {
+      var year = new Date().getFullYear();
+      var y1 = document.getElementById("year");
+      var y2 = document.getElementById("year-ar");
+      if (y1) y1.textContent = year;
+      if (y2) y2.textContent = year;
+    })();
+
+    // تبديل اللغة EN / ع
+    window.addEventListener("DOMContentLoaded", function () {
+      var langButtons = document.querySelectorAll(".lang-btn");
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var lang = this.getAttribute("data-lang");
+
+          // تفعيل الزر المختار
+          langButtons.forEach(function (b) {
+            b.classList.remove("lang-active");
+          });
+          this.classList.add("lang-active");
+
+          // تبديل الكلاس على الـ body + اتجاه الصفحة
+          if (lang === "ar") {
+            document.body.classList.add("ar-active");
+            document.documentElement.lang = "ar";
+            document.documentElement.dir = "rtl";
+          } else {
+            document.body.classList.remove("ar-active");
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+          }
+        });
+      });
+    });
+  </script>
+  <!-- WhatsApp Contact Button -->
+  <a
+    class="whatsapp-btn"
+    href="https://wa.me/968994004022?text=Hello,%20I%20want%20to%20ask%20about%20ServeUp%20services."
+    target="_blank"
+    rel="noopener"
+  >
+    <span class="whatsapp-icon">💬</span>
+    <span class="lang-en">Chat on WhatsApp</span>
+    <span class="lang-ar">تواصل عبر واتساب</span>
+  </a>
+</body>
+</html>
